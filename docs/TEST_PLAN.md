@@ -1,0 +1,81 @@
+# Validation record
+
+## Version 0.4.0 — Complete Upgrade phases 2–6, 12 October 2026
+
+- Default workspace suite: **73 passed, zero failed, nine opt-in tests excluded**. A subsequent shutdown regression brings the distinct default total to **74**; all 18 application tests passed after that change. Normal close during a network job requests cancellation, defers close until completion and then closes automatically. Formatting and strict all-target/all-feature Clippy passed after the final change. Logs: `artifacts/upgrade-workspace-tests.txt`, `artifacts/upgrade-final-app-tests.txt`, `artifacts/upgrade-clippy.txt`.
+- Regression coverage includes centered modal dimensions/Escape with 1,000 test apps, verified inventory refresh/filter retention/notices, toast expiry/deduplication, signed battery units/unknown/zero/multi-pack behavior, settings migration, route/counter reset and actual deltas, ICMP statistics, public ISP/ASN parsing, Ookla JSONL result units/missing values/cancel-before-launch, WUA COM callback interfaces, consent/state ordering and measured ETA/stall/reset handling.
+- Software layout matrix: nine pages plus Network at 1280×720, 1366×768, 1600×900, 1920×1080 and 2560×1440 with native viewport ratios 100/125/150/175%. Modal interaction additionally covers 620/1200/1920 logical widths. Test fixtures are never used by the production GUI.
+- Native real-data captures of Network, Apps modal, Battery and Drivers were visually inspected: `artifacts/upgrade-qa`. Current-host battery returned an actual zero net W while connected to AC; this is correctly distinguished from unavailable telemetry.
+- Explicit opt-in checks passed: three isolated Apps native tests (9.03 seconds), actual DXGI/WDDM GPU counters (1.32 seconds), IPv4/IPv6 loopback/interface counters and publisher Ookla archive/hash/extraction (0.13 seconds for both network checks). Log: `artifacts/upgrade-native-tests.txt`. Disposable uninstall tests touch only their own HKCU fixture registrations; no user app is removed.
+- Actual asynchronous read-only WUA search passed (181.22 seconds): `artifacts/upgrade-phase5-wua-native.txt`. No real driver download/install, restart or user license acceptance is performed in automated QA. Ookla end-to-end internet measurement remains a manual, explicitly started check.
+- Physical Windows 10, other vendor systems, multi-battery transitions, full accessibility and multi-monitor DPI transitions remain manual acceptance work. The application's updater remains unconfigured without publisher origin/signing key. EXE/MSI have no publisher signature without a certificate.
+- Optimized production release, x64 Windows GUI PE/version check, WiX compilation/link/ICE validation, MSI identity/incorrect-version rejection and administrative extraction/native GUI smoke passed. Payload hash/version/docs were verified; production GUI launched, responded and closed normally. Existing installation/preferences were preserved. The MSI identity check brings explicitly executed opt-in integrations to **8**, in addition to **74** distinct default tests. The performance profiler remains historical Phase 1 evidence rather than a new 0.4.0 benchmark. Results: COMPLETE_UPGRADE.md and `artifacts/package-test-0.4.0/result.txt`.
+
+## Version 0.3.0 — Apps Manager validation, 11 October 2026
+
+- Full workspace suite: **56 passed, 0 failed, 6 opt-in tests excluded by default**. Log: `artifacts/apps-workspace-tests.txt`. The final suite includes the compact-card/details-panel geometry regression and partial-failure recovery test. Formatting and strict all-target/all-feature Clippy passed.
+- Nine-page software layout matrix covers 1280×720, 1366×768, 1600×900, 1920×1080 and 2560×1440 at 100/125/150/175% viewport DPI. Actual pointer tests switch the three Apps tabs with 1,000 test-only entries at narrow/wide sizes. Existing driver geometry/virtualization regressions continue passing.
+- Seven cleanup tests operate on isolated real files: rule/current-inventory ownership, configuration protection, approval refusal, dry-run non-mutation, changed-target/cancel refusal, hard-link and unknown-publisher rejection, quarantine/restore, no-overwrite recovery, separately approved permanent purge and partial-failure recovery. The partial-failure case preserves a changed file, quarantines the other valid file, then restores it successfully. Sandbox hard-link/WMI access restrictions were rerun with approved OS access; tests were not weakened.
+- All three Apps native integrations explicitly passed (15.80 seconds): current-user registry/Store inventory; actual Windows junction rejection; disposable official uninstaller with success 0, cancel 1602 and restart 3010. Native log: `artifacts/apps-native/native-tests.txt`. Inventory: **506 entries: 126 desktop, 241 MSI, 139 Store; all five sources complete; no source warnings**. Summary: `artifacts/apps-native/inventory-summary.json`. The disposable fixture registers/removes only its own HKCU test keys and launches an undistributed helper; it never uninstalls user applications.
+- Existing physical GPU counter integration passed in 1.46 seconds. Official read-only Windows Update search passed in 22.78 seconds; no driver download or install occurred.
+- Native Apps captures at 780×780, 1200×900 and 1600×900 cover compact/wide inventory, real details and cleaner initial state: `artifacts/gui-v0.3.0`. No sample inventory is injected into the native app. Empty history is described as unscanned rather than claiming zero leftovers.
+- Interactive UAC acceptance/denial and real third-party MSI/Store removal are deliberately unexecuted manual acceptance items. The backend uses native supported APIs; planning/consent validation and Win32 launch/wait/verification are tested. Cross-machine Windows 10, physical multi-monitor DPI and full keyboard/screen-reader acceptance remain open.
+
+- Final optimized production build and WiX 3.14.1 MSI compilation/link/ICE validation passed. ICE91 warnings are expected for the intentional per-user install scope. The x64 Windows GUI EXE is version 0.3.0 and is built without screenshot/lab driver-install features. EXE/MSI remain unsigned because no signing certificate is available.
+- The read-only packaged MSI identity test passed, including rejection of an incorrect requested version. All six default-excluded integrations therefore passed explicitly: three Apps tests, GPU counters, read-only WUA search and MSI identity. Total: **56 workspace tests plus 6 opt-in integrations, zero failures**.
+- MSI administrative extraction verified its exact production executable hash, embedded version and required documentation, including APPS_MANAGER.md. The extracted production GUI opened, responded and closed normally; the settings hash was unchanged. Existing RigPulse was not upgraded or uninstalled. This is payload/native smoke validation, not a claim of a new real install/upgrade/uninstall cycle. Result/log: `artifacts/package-test-0.3.0/result.txt` and `extract.log`.
+
+Historical results below apply only to their stated versions.
+
+## Original 0.1.0 automated/current-host checks
+
+11 October 2026, Windows 11 x64 Lenovo host with NVIDIA GeForce RTX 4050 Laptop GPU:
+
+- Formatting, all-feature check, strict all-target/all-feature clippy and native release build passed.
+- `cargo test --workspace --locked`: 31 passed, zero failed. Two environment-dependent integrations are opt-in by default.
+- Explicit online `real_wua_read_only`: passed in 35.58 seconds; no download/install. Explicit `actual_dxgi_and_wddm_counters`: passed on physical host.
+- Real WMI inventory, battery/power/capacity, SetupAPI/CM device status, storage health and Event Log calls passed current-host integration checks.
+- GUI navigation: real pointer clicks across eight destinations at widths 1024 and 1200 logical pixels and 100/150/200% scale settings. Actual native captures: `artifacts/gui-final/`. Dark Navy render checked visually; sources and unsupported status remain explicit.
+- Ring-buffer bounds, duplicate/out-of-order/invalid samples, time windows, missing/relative battery capacity and privacy are covered.
+- Driver consent, source/allowlist/expiry and state ordering tested; terminal state cannot resume. Lab-only installer compiles. No actual driver mutation performed.
+- SQLite migration/roundtrip, newer-schema rejection, rollback on failed finding insert, 200-scan retention with cascades, deletion and operation audit covered.
+- Real JSON/PDF and DB roundtrip: `artifacts/verified-report/`. All 14 PDF pages rendered; contact sheet plus representative page reviewed. pypdf read/text/unit/identifier checks passed without malformed-character warnings. Export regression covers UTF-16 surrogate pairs.
+- Release PE inspected: x64 Windows GUI subsystem, version 0.1.0, icon/manifest resources; static CRT, Windows system DLL dependencies and optional system NVIDIA provider.
+
+Manual multi-monitor DPI, keyboard/accessibility and prolonged resource profiling remain open. Rendering tests at logical scale settings do not substitute for physical multi-monitor testing.
+
+## Physical matrix
+
+Current Windows 11 Lenovo/RTX host: checks above completed. Windows 10, batteryless desktop, ASUS/Acer/HP/Dell, AMD/Intel-only GPU and external GPU: not physically tested. Driver mutation requires a recoverable lab machine and per-package consent; privilege-denial, partial install and restart remain outstanding. P2 tray/autostart/second-language work is not implemented.
+
+## Original 0.1.0 MSI acceptance
+
+Real Windows Installer test passed: install exit 0; Start Menu shortcut and installed-file SHA-256 match; installed native GUI responsive and closed normally; major upgrade to a QA-only 0.1.1 package removed old product registration and installed new version; uninstall exit 0; application/shortcut removed; original preference hash retained. The QA installation was removed. Shipping release remains 0.1.0.
+
+Logs: `artifacts/installer/install.log`, `upgrade.log`, `uninstall.log`, `result.txt`. The initial harness incorrectly inspected an uninstall registry path and then passed an untyped COM result. Both harness checks were corrected to use typed MSI product codes and official Installer.ProductState; the complete test then passed. No production application change was needed for these harness failures.
+
+WiX emits ICE91 notices for per-user application files by design; all other ICE validation passed. Installer targets the current user's Programs folder and preserves `%LOCALAPPDATA%\RigPulse` data. Signing is not performed without a certificate.
+
+## Version 0.2.0 overhaul — 11 October 2026
+
+- Final workspace suite: **45 passed, zero failed**, three opt-in integrations excluded by default (network WUA, physical GPU counters and packaged MSI identity). Strict all-feature/all-target Clippy and formatting passed.
+- Navigation clicks cover all eight destinations at 620–2560 logical widths with explicit native pixel ratios 100/125/150/175%. A separate 160-frame matrix renders eight pages at five physical resolutions (1280×720, 1366×768, 1600×900, 1920×1080, 2560×1440) and all four native DPI ratios. This is software layout testing; it does not certify physical multi-monitor transitions.
+- Specification rows tested at 220/350/620/1200 widths for alignment, horizontal bounds and severe battery-value wrapping. Drivers regression renders 500 test-only entries, verifies exact column geometry and total row height, and keeps rendered row count bounded to the viewport.
+- Live native screenshots of all eight pages and narrow/wide variants are in artifacts/gui-v0.2.0. Final Drivers-fixed images verify the follow-up alignment/scrolling fixes with 301 real host devices. Settings About correctly shows the missing release configuration.
+- Settings legacy migration, interval/history/scale persistence, privacy defaults, paused snapshot/live-history separation and selected-range statistics passed.
+- Updater tests cover semantic versions, invalid metadata, wrong signing key, expired manifests, wrong origins/architectures, HTTP rejection, corrupted/truncated bytes, cancellation and an actual refused HTTPS loopback connection. No live official release endpoint is configured; no real application update download/install is claimed.
+- The first DPI navigation assertion used a redundant pixels-per-point setter; corrected to native viewport input and reran. A driver row-height regression exposed cursor movement from positioned buttons; independent child UIs fixed it and the 500-row test passed.
+- Version 0.1.0 is already installed and running on the user's host. Version 0.2.0 testing therefore uses separate native captures and an administrative MSI payload extraction/smoke test, preserving that existing installation. MSI identity/version rejection passed. Administrative extraction verified the exact production executable hash, version and documentation; the extracted production GUI opened, responded and closed normally; the preference hash was unchanged. This is payload validation, not a claim that the user's existing installation was upgraded or uninstalled. Logs are under artifacts/validation-v0.2.0 and artifacts/package-test-0.2.0.
+- Both remaining opt-in integrations were run explicitly for 0.2.0: actual DXGI/WDDM hardware counters passed on the current RTX host (1.71 seconds), and read-only Windows Update search passed (24.58 seconds). Together with the MSI identity test, all three default-excluded tests passed separately: 45 workspace tests plus three opt-in tests, zero failures. No driver installation was performed.
+- After the final narrow-window filter-width adjustment, formatting, strict all-feature/all-target Clippy and all seven application tests passed again. Native 620-pixel filters and 780-pixel scrolled device rows were visually inspected; production release build and MSI packaging passed. WiX ICE91 warnings remain the documented consequence of intentional per-user installation.
+
+## Complete Upgrade — Phase 1 / 0.3.1
+
+- Formatting and strict all-target/all-feature Clippy passed. Default workspace suite: 62 passing tests, zero failures, seven opt-in tests excluded. The subsequently added nonstructural-refresh regression passed independently: 63 distinct default tests total. The profiler was explicitly run in debug/release before and after changes.
+- Development render/input fixtures: 1,000 apps, 500 drivers, 1,000 wrapping hardware properties, 200 report cards, 3,600 chart samples; actual monitoring worker remains active. The 96-case benchmark covers four physical sizes and four native pixel ratios across six views. Native line wheel, fractional point wheel, scrollbar drag, wrapping on resize, unchanged scroll offset on refresh, filter invalidation and cached pause/window statistics are covered.
+- Existing pointer-click tests now disconnect unrelated startup service events from fixture rendering, preventing a background notice from moving a tab between pointer press and release. The earlier intermittent tab assertion passed after this isolation and in the final workspace suite.
+- Real Windows release GUI profiles: 300 drivers, 143 hardware properties, 505 app registrations/packages (182 regular apps under the default filter). Six narrow/wide/scrolled native captures were visually inspected. Raw timing methodology/results and user acceptance checklist: UPGRADE_PHASE1.md; artifact directory: artifacts/performance-phase1.
+- Release CPU average Hardware 3.337 to 0.301 ms, Reports 1.087 to 0.149 ms on the stress corpus. This is layout/tessellation timing, not physical touchpad certification or a guarantee that every display interval stays below 16.7 ms. Native scheduling outliers are reported in UPGRADE_PHASE1.md.
+- Phase 2 remains pending explicit user acceptance of this Windows Phase 1 build.
+
+Package validation for 0.3.1 uses WiX ICE checks, read-only MSI identity/version rejection, administrative payload extraction, EXE hash/version/document verification and production GUI launch/respond/normal close with preserved settings. It does not replace the existing user installation. The completed extraction/smoke result is recorded at `artifacts/package-test-0.3.1/result.txt`; signing remains unavailable.

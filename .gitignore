@@ -1,0 +1,7 @@
+/target/
+/.tools/
+/dist/
+/artifacts/
+/keys/
+*.log
+genkey.py

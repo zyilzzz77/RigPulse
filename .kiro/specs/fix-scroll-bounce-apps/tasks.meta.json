@@ -1,0 +1,52 @@
+{
+  "pbtResults": {},
+  "executionHistory": {
+    "1. Write bug condition exploration test": [
+      {
+        "executionId": "3d844741-c646-4a68-bc83-d31181f4e531",
+        "chatSessionId": "sess_9ec9ff8a-dfc6-4b7f-9966-80b1d44ef729",
+        "timestamp": 1791774749681
+      },
+      {
+        "executionId": "3d844741-c646-4a68-bc83-d31181f4e531",
+        "chatSessionId": "sess_9ec9ff8a-dfc6-4b7f-9966-80b1d44ef729",
+        "timestamp": 1791774766580
+      }
+    ],
+    "2. Write preservation property tests (BEFORE implementing fix)": [
+      {
+        "executionId": "3d844741-c646-4a68-bc83-d31181f4e531",
+        "chatSessionId": "sess_9ec9ff8a-dfc6-4b7f-9966-80b1d44ef729",
+        "timestamp": 1791774750240
+      }
+    ],
+    "3.1 Replace manual virtual scroll loop with `VirtualRows`": [
+      {
+        "executionId": "3d844741-c646-4a68-bc83-d31181f4e531",
+        "chatSessionId": "sess_9ec9ff8a-dfc6-4b7f-9966-80b1d44ef729",
+        "timestamp": 1791774750283
+      }
+    ],
+    "3.2 Verify bug condition exploration test now passes": [
+      {
+        "executionId": "3d844741-c646-4a68-bc83-d31181f4e531",
+        "chatSessionId": "sess_9ec9ff8a-dfc6-4b7f-9966-80b1d44ef729",
+        "timestamp": 1791774750329
+      }
+    ],
+    "3.3 Verify preservation tests still pass": [
+      {
+        "executionId": "3d844741-c646-4a68-bc83-d31181f4e531",
+        "chatSessionId": "sess_9ec9ff8a-dfc6-4b7f-9966-80b1d44ef729",
+        "timestamp": 1791774750386
+      }
+    ],
+    "4. Checkpoint — Ensure all tests pass": [
+      {
+        "executionId": "3d844741-c646-4a68-bc83-d31181f4e531",
+        "chatSessionId": "sess_9ec9ff8a-dfc6-4b7f-9966-80b1d44ef729",
+        "timestamp": 1791774750443
+      }
+    ]
+  }
+}

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <Product Id="*" Name="RigPulse" Language="1033" Version="$(var.Version)" Manufacturer="RigPulse Contributors" UpgradeCode="E10F4D59-89E4-44BC-BB62-C6C8DE55357F">
+    <Package InstallerVersion="500" Compressed="yes" InstallScope="perUser" Platform="x64" Description="RigPulse Windows Hardware Monitor"/>
+    <MajorUpgrade DowngradeErrorMessage="A newer version of RigPulse is already installed."/>
+    <MediaTemplate EmbedCab="yes" CompressionLevel="high"/>
+    <Property Id="ARPNOREPAIR" Value="1"/>
+    <Property Id="ARPPRODUCTICON" Value="RigPulseIcon"/>
+    <Icon Id="RigPulseIcon" SourceFile="$(var.SourceDir)\RigPulse.exe"/>
+    <Property Id="WINDOWSBUILDNUMBER"><RegistrySearch Id="WindowsBuildNumber" Root="HKLM" Key="SOFTWARE\Microsoft\Windows NT\CurrentVersion" Name="CurrentBuildNumber" Type="raw" Win64="yes"/></Property>
+    <Condition Message="RigPulse requires Windows 10 or later (64 bit).">Installed OR (VersionNT64 AND WINDOWSBUILDNUMBER &gt;= 10240)</Condition>
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="LocalAppDataFolder"><Directory Id="ProgramsFolder" Name="Programs"><Directory Id="INSTALLFOLDER" Name="RigPulse">
+        <Component Id="Application" Guid="7E7CE44C-88F8-4F4D-A31B-E26CDE88DBE2" Win64="yes">
+          <File Id="ApplicationExe" Source="$(var.SourceDir)\RigPulse.exe"/>
+          <File Id="Readme" Source="$(var.SourceDir)\README.md"/>
+          <File Id="License" Source="$(var.SourceDir)\LICENSE.txt"/>
+          <File Id="ThirdParty" Source="$(var.SourceDir)\THIRD_PARTY_NOTICES.txt"/>
+          <RegistryValue Root="HKCU" Key="Software\RigPulse" Name="ApplicationVersion" Value="$(var.Version)" Type="string" KeyPath="yes"/>
+          <RemoveFolder Id="RemoveAppFolder" Directory="INSTALLFOLDER" On="uninstall"/>
+          <RemoveFolder Id="RemoveEmptyProgramsFolder" Directory="ProgramsFolder" On="uninstall"/>
+        </Component>
+        <Directory Id="DOCSFOLDER" Name="docs"><Component Id="Documentation" Guid="A0AB7B7C-41F8-4F52-8DF4-6B228543E46B" Win64="yes">
+          <File Id="ArchitectureDoc" Source="$(var.SourceDir)\docs\ARCHITECTURE.md"/>
+          <File Id="LimitationsDoc" Source="$(var.SourceDir)\docs\LIMITATIONS.md"/>
+          <File Id="PhaseDoc" Source="$(var.SourceDir)\docs\PHASE_LOG.md"/>
+          <File Id="TestsDoc" Source="$(var.SourceDir)\docs\TEST_PLAN.md"/>
+          <File Id="OverhaulDoc" Source="$(var.SourceDir)\docs\UI_UX_OVERHAUL.md"/>
+          <File Id="UpdaterDoc" Source="$(var.SourceDir)\docs\APPLICATION_UPDATES.md"/>
+          <File Id="AppsManagerDoc" Source="$(var.SourceDir)\docs\APPS_MANAGER.md"/>
+          <File Id="UpgradePhase1Doc" Source="$(var.SourceDir)\docs\UPGRADE_PHASE1.md"/>
+          <File Id="CompleteUpgradeDoc" Source="$(var.SourceDir)\docs\COMPLETE_UPGRADE.md"/>
+          <RegistryValue Root="HKCU" Key="Software\RigPulse" Name="DocumentationVersion" Value="$(var.Version)" Type="string" KeyPath="yes"/>
+          <RemoveFolder Id="RemoveDocsFolder" On="uninstall"/>
+        </Component></Directory>
+      </Directory></Directory></Directory>
+      <Directory Id="ProgramMenuFolder"><Directory Id="RigPulseMenu" Name="RigPulse">
+        <Component Id="Shortcuts" Guid="6C7B2DC7-2871-4D12-AF27-D1E665DE0455" Win64="yes">
+          <Shortcut Id="StartMenuShortcut" Name="RigPulse" Target="[INSTALLFOLDER]RigPulse.exe" WorkingDirectory="INSTALLFOLDER" Icon="RigPulseIcon"/>
+          <RemoveFolder Id="RemoveMenuFolder" On="uninstall"/>
+          <RegistryValue Root="HKCU" Key="Software\RigPulse" Name="Installed" Value="1" Type="integer" KeyPath="yes"/>
+        </Component>
+      </Directory></Directory>
+    </Directory>
+    <Feature Id="Complete" Title="RigPulse" Level="1"><ComponentRef Id="Application"/><ComponentRef Id="Shortcuts"/><ComponentRef Id="Documentation"/></Feature>
+    <Property Id="WIXUI_INSTALLDIR" Value="INSTALLFOLDER"/>
+    <WixVariable Id="WixUILicenseRtf" Value="$(var.LicenseRtf)"/>
+    <UIRef Id="WixUI_Minimal"/>
+  </Product>
+</Wix>
+

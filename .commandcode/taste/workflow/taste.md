@@ -1,0 +1,1 @@
+- Prefers to see the app built and inspect it directly ("biar gw lihat langsung") rather than relying on reported test results or agent summaries. Confidence: 0.65

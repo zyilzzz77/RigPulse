@@ -1,0 +1,44 @@
+[package]
+name = "rigpulse"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+default-run = "RigPulse"
+description = "RigPulse native Windows hardware monitoring and diagnostics"
+
+[build-dependencies]
+winresource = "=0.1.31"
+image = { version = "0.25", default-features = false, features = ["png", "ico"] }
+
+[features]
+qa-screenshot = ["eframe/__screenshot"]
+lab-driver-install = ["rigpulse-drivers/lab-install"]
+
+[[bin]]
+name = "RigPulse"
+path = "src/main.rs"
+
+[dependencies]
+rigpulse-network = { path = "../../crates/rigpulse-network" }
+rigpulse-core = { path = "../../crates/rigpulse-core" }
+rigpulse-windows = { path = "../../crates/rigpulse-windows" }
+rigpulse-monitor = { path = "../../crates/rigpulse-monitor" }
+rigpulse-drivers = { path = "../../crates/rigpulse-drivers" }
+rigpulse-diagnostics = { path = "../../crates/rigpulse-diagnostics" }
+rigpulse-database = { path = "../../crates/rigpulse-database" }
+rigpulse-reports = { path = "../../crates/rigpulse-reports" }
+rigpulse-updater = { path = "../../crates/rigpulse-updater" }
+rigpulse-apps = { path = "../../crates/rigpulse-apps" }
+egui_plot = "=0.33.0"
+eframe = { version = "=0.32.3", default-features = false, features = ["default_fonts", "glow", "accesskit"] }
+serde.workspace = true
+serde_json.workspace = true
+anyhow.workspace = true
+tracing.workspace = true
+chrono.workspace = true
+image = { version = "0.25", default-features = false, features = ["png"] }
+tracing-subscriber = { version = "0.3", features = ["fmt", "json"] }
+
+[target.'cfg(windows)'.dependencies]
+windows = { version = "0.62", features = ["Win32_UI_WindowsAndMessaging", "Win32_Foundation"] }

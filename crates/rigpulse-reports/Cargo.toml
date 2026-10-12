@@ -1,0 +1,19 @@
+[package]
+name = "rigpulse-reports"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+[dependencies]
+rigpulse-core = { path = "../rigpulse-core" }
+rigpulse-monitor = { path = "../rigpulse-monitor" }
+anyhow.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+chrono.workspace = true
+genpdf = "=0.2.0"
+lopdf = { version = "=0.26.0", default-features = false, features = ["pom_parser"] }
+
+[dev-dependencies]
+rigpulse-windows = { path = "../rigpulse-windows" }
+rigpulse-diagnostics = { path = "../rigpulse-diagnostics" }
+rigpulse-database = { path = "../rigpulse-database" }

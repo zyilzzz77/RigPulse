@@ -1,0 +1,24 @@
+[workspace]
+members = ["apps/rigpulse", "crates/rigpulse-core", "crates/rigpulse-windows", "crates/rigpulse-monitor", "crates/rigpulse-drivers", "crates/rigpulse-diagnostics", "crates/rigpulse-database", "crates/rigpulse-reports", "crates/rigpulse-updater", "crates/rigpulse-apps", "crates/rigpulse-network"]
+resolver = "2"
+
+[workspace.package]
+version = "0.4.0"
+edition = "2024"
+rust-version = "1.90"
+license = "MIT"
+authors = ["RigPulse Contributors"]
+
+[workspace.dependencies]
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+anyhow = "1.0"
+tracing = "0.1"
+chrono = { version = "0.4", features = ["serde"] }
+
+[profile.release]
+lto = "thin"
+strip = true
+codegen-units = 1
+
+

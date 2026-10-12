@@ -1,0 +1,4 @@
+CREATE TABLE scan_runs(id INTEGER PRIMARY KEY AUTOINCREMENT,scan_type TEXT NOT NULL,started_at TEXT NOT NULL,finished_at TEXT,status TEXT NOT NULL,summary_json TEXT);
+CREATE TABLE scan_findings(id INTEGER PRIMARY KEY AUTOINCREMENT,scan_run_id INTEGER NOT NULL REFERENCES scan_runs(id) ON DELETE CASCADE,category TEXT NOT NULL,severity TEXT NOT NULL,status TEXT NOT NULL,title TEXT NOT NULL,explanation TEXT NOT NULL,evidence_json TEXT,recommended_action TEXT);
+CREATE TABLE driver_operations(id INTEGER PRIMARY KEY AUTOINCREMENT,update_id TEXT,device_label TEXT,source TEXT NOT NULL,action TEXT NOT NULL,state TEXT NOT NULL,started_at TEXT NOT NULL,finished_at TEXT,error_message TEXT,restart_required INTEGER NOT NULL DEFAULT 0);
+CREATE TABLE battery_health_history(id INTEGER PRIMARY KEY AUTOINCREMENT,collected_at TEXT NOT NULL,design_capacity_mwh INTEGER,full_charge_capacity_mwh INTEGER,health_percent REAL,source TEXT);

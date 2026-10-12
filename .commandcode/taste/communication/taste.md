@@ -1,0 +1,1 @@
+- Prefers informal Indonesian (colloquial "ko", "gw", "nyaa") in conversation. Confidence: 0.9

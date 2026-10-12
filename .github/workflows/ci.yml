@@ -1,0 +1,99 @@
+name: Windows CI
+on:
+  push:
+    branches: [main]
+    tags: ["v*"]
+  pull_request:
+  workflow_dispatch:
+jobs:
+  verify:
+    runs-on: windows-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@1.90.0
+        with:
+          components: rustfmt, clippy
+      - uses: Swatinem/rust-cache@v2
+      - id: version
+        shell: pwsh
+        run: |
+          $ver = (Select-String -Path Cargo.toml -Pattern '^version = "([^"]+)"').Matches[0].Groups[1].Value
+          "version=$ver" >> $env:GITHUB_OUTPUT
+      - run: cargo fmt --all --check
+      - run: cargo check --workspace --all-features --locked
+      - run: cargo clippy --workspace --all-targets --all-features --locked -- -D warnings
+      - run: cargo test --workspace --locked
+      - run: cargo build --release -p rigpulse --locked
+      - name: Download WiX 3.14.1
+        shell: pwsh
+        run: |
+          Invoke-WebRequest https://github.com/wixtoolset/wix3/releases/download/wix3141rtm/wix314-binaries.zip -OutFile "$env:RUNNER_TEMP/wix.zip"
+          Expand-Archive "$env:RUNNER_TEMP/wix.zip" "$env:RUNNER_TEMP/wix"
+      - name: Package release
+        shell: pwsh
+        run: ./scripts/package.ps1 -WixBin "$env:RUNNER_TEMP/wix" -SkipBuild
+      - uses: actions/upload-artifact@v4
+        with:
+          name: RigPulse-windows-x64
+          path: |
+            dist/*.msi
+            dist/*.zip
+            dist/SHA256SUMS.txt
+  release:
+    needs: verify
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: windows-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@1.90.0
+      - uses: Swatinem/rust-cache@v2
+      - name: Download WiX 3.14.1
+        shell: pwsh
+        run: |
+          Invoke-WebRequest https://github.com/wixtoolset/wix3/releases/download/wix3141rtm/wix314-binaries.zip -OutFile "$env:RUNNER_TEMP/wix.zip"
+          Expand-Archive "$env:RUNNER_TEMP/wix.zip" "$env:RUNNER_TEMP/wix"
+      - name: Package release
+        shell: pwsh
+        run: ./scripts/package.ps1 -WixBin "$env:RUNNER_TEMP/wix"
+      - name: Sign update manifest
+        shell: pwsh
+        env:
+          RIGPULSE_RELEASE_SIGNING_KEY_BASE64: ${{ secrets.RIGPULSE_RELEASE_SIGNING_KEY_BASE64 }}
+          RIGPULSE_RELEASE_EXPIRY_DAYS: "365"
+        run: |
+          $ErrorActionPreference = "Stop"
+          $ver = (Select-String -Path Cargo.toml -Pattern '^version = "([^"]+)"').Matches[0].Groups[1].Value
+          $msi = "dist/RigPulse-$ver-x64.msi"
+          $size = (Get-Item $msi).Length
+          $sha = (Get-FileHash $msi -Algorithm SHA256).Hash.ToLower()
+          $tag = $env:GITHUB_REF_NAME
+          $manifest = @{
+            schema = 1
+            product = "RigPulse"
+            version = $ver
+            published_at = (Get-Date -AsUTC -UFormat "+%Y-%m-%dT%H:%M:%SZ")
+            expires_at = (Get-Date -AsUTC).AddDays([int]$env:RIGPULSE_RELEASE_EXPIRY_DAYS).ToString("yyyy-MM-ddTHH:mm:ssZ")
+            notes = "RigPulse $ver rilis resmi. Lihat riwayat perubahan di repositori."
+            package = @{
+              url = "https://github.com/${{ github.repository }}/releases/download/$tag/RigPulse-$ver-x64.msi"
+              target = "x86_64-pc-windows-msvc"
+              kind = "msi"
+              size = [long]$size
+              sha256 = $sha
+            }
+          }
+          $manifest | ConvertTo-Json -Depth 5 | Set-Content -Encoding utf8 "dist/release.json"
+          cargo run -p rigpulse-updater --example sign_release --locked -- "dist/release.json" "dist/stable.json"
+      - name: Publish GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            dist/RigPulse-${{ needs.verify.outputs.version }}-x64.msi
+            dist/RigPulse-${{ needs.verify.outputs.version }}-x64-portable.zip
+            dist/SHA256SUMS.txt
+            dist/stable.json
+          fail_on_unmatched_files: true
