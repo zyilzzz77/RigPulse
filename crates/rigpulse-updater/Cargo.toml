@@ -18,3 +18,10 @@ base64 = "0.22"
 [target.'cfg(windows)'.dependencies]
 windows = { version = "0.62", features = ["Win32_System_ApplicationInstallationAndServicing", "Win32_Foundation"] }
 
+[features]
+test-helpers = []
+
+[[example]]
+name = "check_latest"
+required-features = ["test-helpers"]
+

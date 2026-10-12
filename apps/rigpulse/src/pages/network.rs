@@ -4,7 +4,7 @@ use crate::{
     theme,
 };
 use eframe::egui::{self, RichText};
-use rigpulse_network::tools::{gauge_angle, stable_gauge_scale};
+use rigpulse_network::tools::stable_gauge_scale;
 
 #[derive(Default)]
 pub(crate) struct NetworkView {
@@ -103,31 +103,38 @@ fn friendly_name(name: &str) -> String {
     }
 }
 
-/// Vector semicircular speedometer. Needle angle is derived only from the
+/// Vector ~270-degree speedometer. Needle angle is derived only from the
 /// provided (genuine) measurement; no telemetry is synthesized here.
+/// Sweep spans 270 degrees with the gap at the bottom, matching a classic
+/// speed-test gauge.
 fn speedometer(ui: &mut egui::Ui, display_mbps: f64, max: f64, is_download: bool, waiting: bool) {
+    use std::f64::consts::PI;
     let accent = if is_download {
         theme::DOWNLOAD_BLUE
     } else {
         theme::UPLOAD_GREEN
     };
-    let size = egui::vec2(ui.available_width().clamp(280.0, 640.0), 230.0);
+    // 270-degree sweep starting lower-left (135 deg) clockwise to lower-right.
+    const SWEEP: f64 = 1.5 * PI;
+    const START: f64 = 0.75 * PI;
+    let size = egui::vec2(ui.available_width().clamp(280.0, 640.0), 250.0);
     let (rect, _) = ui.allocate_exact_size(size, egui::Sense::hover());
     let painter = ui.painter_at(rect);
-    let center = egui::pos2(rect.center().x, rect.bottom() - 34.0);
-    let radius = (rect.width() / 2.0 - 28.0).clamp(90.0, 220.0);
+    let center = egui::pos2(rect.center().x, rect.bottom() - 24.0);
+    let radius = (rect.width() / 2.0 - 30.0).clamp(90.0, 220.0);
+    let point = |a: f64| center + egui::vec2(a.cos() as f32, a.sin() as f32) * radius;
     let arc_points = |from: f64, to: f64, steps: usize| -> Vec<egui::Pos2> {
         (0..=steps)
             .map(|i| {
                 let a = from + (to - from) * i as f64 / steps as f64;
-                center + egui::vec2(a.cos() as f32, a.sin() as f32) * radius
+                point(a)
             })
             .collect()
     };
     // Background arc.
     painter.add(egui::Shape::line(
-        arc_points(std::f64::consts::PI, 2.0 * std::f64::consts::PI, 64),
-        egui::Stroke::new(14.0, egui::Color32::from_rgb(28, 45, 70)),
+        arc_points(START, START + SWEEP, 96),
+        egui::Stroke::new(16.0, egui::Color32::from_rgb(28, 45, 70)),
     ));
     // Active arc up to the genuine measurement.
     let frac = if waiting {
@@ -137,44 +144,37 @@ fn speedometer(ui: &mut egui::Ui, display_mbps: f64, max: f64, is_download: bool
     };
     if frac > 0.001 {
         painter.add(egui::Shape::line(
-            arc_points(
-                std::f64::consts::PI,
-                std::f64::consts::PI + frac * std::f64::consts::PI,
-                (64.0 * frac).ceil() as usize,
-            ),
-            egui::Stroke::new(14.0, accent),
+            arc_points(START, START + SWEEP * frac, (96.0 * frac).ceil() as usize),
+            egui::Stroke::new(16.0, accent),
         ));
     }
-    // Ticks + scale labels.
+    // Ticks + scale labels at 0/25/50/75/100% of the scale.
     for i in 0..=4 {
         let f = i as f64 / 4.0;
-        let a = std::f64::consts::PI + f * std::f64::consts::PI;
+        let a = START + f * SWEEP;
         let dir = egui::vec2(a.cos() as f32, a.sin() as f32);
         painter.line_segment(
-            [
-                center + dir * (radius - 16.0),
-                center + dir * (radius - 4.0),
-            ],
+            [center + dir * (radius - 18.0), center + dir * (radius - 5.0)],
             egui::Stroke::new(2.0, theme::MUTED),
         );
         let value = max * f;
         let label = format!("{value:.0}");
         painter.text(
-            center + dir * (radius + 14.0),
+            center + dir * (radius + 16.0),
             egui::Align2::CENTER_CENTER,
             label,
             egui::FontId::proportional(11.0),
             theme::MUTED,
         );
     }
-    // Needle.
-    let angle = gauge_angle(if waiting { 0.0 } else { display_mbps }, max);
-    let dir = egui::vec2(angle.cos() as f32, angle.sin() as f32);
+    // Needle: angle along the same 270-degree sweep.
+    let needle_angle = if waiting { START } else { START + SWEEP * frac };
+    let dir = egui::vec2(needle_angle.cos() as f32, needle_angle.sin() as f32);
     painter.line_segment(
-        [center, center + dir * (radius - 22.0)],
-        egui::Stroke::new(3.0, egui::Color32::WHITE),
+        [center, center + dir * (radius - 26.0)],
+        egui::Stroke::new(4.0, egui::Color32::WHITE),
     );
-    painter.circle_filled(center, 9.0, egui::Color32::WHITE);
+    painter.circle_filled(center, 10.0, egui::Color32::WHITE);
     painter.circle_filled(center, 5.0, accent);
 }
 

@@ -74,12 +74,22 @@ const ALLOWED_REDIRECT_HOSTS: &[&str] = &["release-assets.githubusercontent.com"
 fn redirect_policy() -> reqwest::redirect::Policy {
     reqwest::redirect::Policy::custom(|attempt| {
         let next = attempt.url();
-        if next.host_str().is_some_and(|h| ALLOWED_REDIRECT_HOSTS.contains(&h)) {
+        // Allow the GitHub asset CDN, and the github.com -> github.com hop that the
+        // `/releases/latest/download/` short URL produces before reaching the CDN.
+        if next.host_str().is_some_and(|h| {
+            ALLOWED_REDIRECT_HOSTS.contains(&h) || h == "github.com"
+        }) {
             attempt.follow()
         } else {
             attempt.stop()
         }
     })
+}
+/// Build an HTTPS-only client that follows the same redirect allowlist as the
+/// production updater. Exposed for local/CI verification of release endpoint behavior.
+#[cfg(any(test, feature = "test-helpers"))]
+pub fn check_client_for_test() -> reqwest::blocking::Client {
+    client().expect("client")
 }
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
